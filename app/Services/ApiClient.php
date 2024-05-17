@@ -118,17 +118,6 @@ class ApiClient implements ApiClientContract
     }
 
     /**
-     * @param string $password
-     * @param string $token
-     */
-    public function updateGuardian($guardian, $token)
-    {
-        $requestUrl = $this->url . '/api/v1/user/guardian';
-        $user = $this->getClient()->withToken($token)->put($requestUrl, ['guardian' => $guardian]);
-        return $this->handleResponse($user, $requestUrl);
-    }
-
-    /**
      * @param string $token
      */
     public function destroyUser($token)
@@ -161,6 +150,21 @@ class ApiClient implements ApiClientContract
     {
         $requestUrl = $this->url . "/api/v1/user/$cip/profile";
         $response = $this->getClient()->withToken($token['value'])->get($requestUrl);
+        $user = $this->handleResponse($response, $requestUrl)['data'];
+        return $user;
+    }
+
+    /**
+     * Get the profile data of a user
+     *
+     * @param string $cip
+     * @param string $token
+     * @return array
+     */
+    public function getUserFromCip($cip): array
+    {
+        $requestUrl = $this->url . "/api/v1/users/cip/$cip";
+        $response = $this->getClient()->get($requestUrl);
         $user = $this->handleResponse($response, $requestUrl)['data'];
         return $user;
     }
@@ -296,6 +300,45 @@ class ApiClient implements ApiClientContract
         return $this->handleResponse($response, $requestUrl)['data']['url'];
     }
 
+    public function rechargeWallet(string $token, array $data)
+    {
+        $requestUrl = $this->url . '/api/v1/wallet/recharge';
+        $response = $this->getClient()->withToken($token)->post($requestUrl, $data);
+        $res = $response->json();
+        if (isset($res["status"]) && $res["status"] == "success") {
+            return $res["data"];
+        } else {
+            return false;
+        }
+        // return $this->handleResponse($response, $requestUrl)['data'];
+    }
+
+    public function walletTrasfer(string $token, array $data)
+    {
+        $requestUrl = $this->url . '/api/v1/wallet/transfer';
+        $response = $this->getClient()->withToken($token)->post($requestUrl, $data);
+        return $this->handleResponse($response, $requestUrl)['data'];
+    }
+
+    public function paySubscriptionWithWallet(string $token, array $data)
+    {
+        $requestUrl = $this->url . '/api/v1/wallet/pay-subscription';
+        $response = $this->getClient()->withToken($token)->post($requestUrl, $data);
+        return $this->handleResponse($response, $requestUrl)['data'];
+    }
+
+    public function getCurrencies()
+    {
+        $requestUrl = $this->url . '/api/v1/currencies';
+        $response = $this->getClient()->get($requestUrl);
+        return $this->handleResponse($response, $requestUrl)['data']['currencies'];
+    }
+
+    public function quickPay(array $data) {
+        $requestUrl = $this->url . '/api/v1/payment/quickpay';
+        $response = $this->getClient()->post($requestUrl, $data);
+        return $this->handleResponse($response, $requestUrl)['data'];
+    }
     /**
      * @param Response $response
      * @param string $requestUrl
@@ -306,6 +349,7 @@ class ApiClient implements ApiClientContract
     {
         $data = $response->json();
         $status = $data['status'] ?? 'error';
+
         if ($response["status"] != "success" || $status === 'error') {
             $message = $data['message'] ?? $response['reason'];
             // $message = $data['message'] ?? $response->reason();

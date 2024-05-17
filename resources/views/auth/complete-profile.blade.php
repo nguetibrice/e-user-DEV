@@ -59,7 +59,7 @@
                 @csrf
                 <div class="rounded-t border-b p-4 dark:border-gray-600">
                     <h3 class="text-black-900 text-center text-xl font-semibold dark:text-black">
-                        Inscription
+                        Complete Profile
                     </h3>
                 </div>
                 <div class="grid grid-cols-6 gap-6 p-6">
@@ -68,8 +68,8 @@
                             for="first_name">Prénom <code class="text-red-500">*</code> </label>
                         <input id="firstname"
                             class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 shadow-sm focus:border-blue-600 focus:ring-blue-600 dark:border-gray-500 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
-                            type="text" name="first_name" value="{{ old('first_name') }}" autofocus
-                            autocomplete="firstname" placeholder="Entrez votre prénom" />
+                            type="text" name="first_name" value="{{ $user['first_name'] }}" autofocus
+                            autocomplete="firstname" placeholder="Entrez votre prénom" readonly/>
                         <span class="error text-red-700" id="error_first_name"></span>
                         @error('first_name')
                             <span class="error text-red-700">{{ $message }}</span>
@@ -97,8 +97,8 @@
                             for="last_name">Nom <code class="text-red-500">*</code></label>
                         <input id="lastname"
                             class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 shadow-sm focus:border-blue-600 focus:ring-blue-600 dark:border-gray-500 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
-                            type="text" name="last_name" value="{{ old('last_name') }}"
-                            placeholder="Entrez votre nom" autofocus autocomplete="lastname" />
+                            type="text" name="last_name" value="{{ $user['last_name'] }}"
+                            placeholder="Entrez votre nom" autofocus autocomplete="lastname" readonly/>
                         <span class="error text-red-700" id="error_lastname"></span>
                         @error('last_name')
                             <span class="error text-red-700">{{ $message }}</span>
@@ -108,8 +108,8 @@
                     <div class="col-span-6 sm:col-span-3">
                         <label for="birthday" class="mb-2 block text-sm font-medium text-gray-900 dark:text-black">Date
                             de naissance <code class="text-red-500">*</code></label>
-                        <input type="date" name="birthday" value="{{ old('birthday') }}"
-                            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 shadow-sm focus:border-blue-600 focus:ring-blue-600 dark:border-gray-500 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm">
+                        <input type="date" name="birthday" value="{{ $user['birthday'] }}"
+                            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 shadow-sm focus:border-blue-600 focus:ring-blue-600 dark:border-gray-500 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm" readonly>
                     </div>
 
                     <div class="col-span-6 sm:col-span-3">
@@ -118,7 +118,7 @@
                         <input id="phone" wire:model="phone"
                             class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 shadow-sm focus:border-blue-600 focus:ring-blue-600 dark:border-gray-500 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
                             type="text" placeholder="Entrez votre numéro de téléphone" name="phone"
-                            value="{{ old('phone') }}" autofocus autocomplete="phone" />
+                            value="{{ $user['phone'] }}" autofocus autocomplete="phone" readonly/>
                     </div>
 
                     <div class="col-span-6 sm:col-span-3">
@@ -127,7 +127,7 @@
                         <input id="email" wire:model="email"
                             class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 shadow-sm focus:border-blue-600 focus:ring-blue-600 dark:border-gray-500 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
                             type="email" placeholder="Entrez votre e-mail" name="email"
-                            value="{{ old('email') }}" />
+                            value="{{ $user['email'] }}" readonly/>
                         <span class="error text-red-700" id="error_email"></span>
 
                     </div>
@@ -137,7 +137,7 @@
                             class="mb-2 block text-sm font-medium text-gray-900 dark:text-black">Alias <code class="text-red-500">*</code></label>
                         <input id="date" wire:model="alias"
                             class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 shadow-sm focus:border-blue-600 focus:ring-blue-600 dark:border-gray-500 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
-                            type="text" name="alias" value="{{ old('alias') }}" autofocus autocomplete="alias"
+                            type="text" name="alias" value="{{ $user['alias'] }}" autofocus autocomplete="alias"
                             placeholder="Choisissez un alias personnel" />
                         <span class="error text-red-700" id="error_alias"></span>
 
@@ -169,11 +169,11 @@
                             class="mb-2 block text-sm font-medium text-gray-900 dark:text-black">Tuteur (CIP,Alias ou Telephone)</label>
                         <input id="guardian"
                             class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 shadow-sm focus:border-blue-600 focus:ring-blue-600 dark:border-gray-500 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
-                            type="text" name="guardian" value="{{ old("guardian") }}" />
+                            type="text" name="guardian" value="" />
                         <span class="error text-red-700" id="error_guardian"></span>
 
                     </div>
-
+                    <input id="cip" type="hidden" name="cip" value="{{ $user["cip"] }}" />
                 </div>
                 <div class="p-6">
                     <input type="checkbox" required name="contract" id="contract" checked>
@@ -188,7 +188,7 @@
                     </a>
                     <button wire.click="register" name="inscription" id="btn_inscription"
                         class="ml-4 inline-flex items-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-gray-700 focus:border-gray-900 focus:outline-none focus:ring focus:ring-gray-300 active:bg-gray-900 disabled:opacity-25">
-                        {{ __("S'inscrire") }}
+                        {{ __("Completer Profile") }}
                     </button>
                 </div>
             </form>

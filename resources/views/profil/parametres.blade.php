@@ -121,35 +121,6 @@
 
         </div>
 
-                <div class="row justify-content-center pt-5">
-            <div class="col-lg-4">
-                <h3 class="mb-2 text-2xl font-bold">Mettre à jour votre tuteur</h3>
-                <span class="text-justify" style="padding-top:-3px;">
-                    {{-- Votre tuteur est {{$user['first_name']}} --}}
-                </span>
-            </div>
-
-            <div class="col-lg-8 pt-0 text-center">
-                <div class="card mt-md-3 mb-5 rounded bg-white py-4" style="box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175)">
-                    <label for="new_password" class="col-12 px-3 pl-0 text-left">dans la zone de texte entrez soit le CIP, du nouveau tuteur, soit son alias, soit son email</label><br>
-                    <input type="hidden" id="guardian_update_route"
-                        value="{{ route('user_guardian_update', $user['id']) }}">
-                    <div class="form-group px-3">
-                        <label for="guardian" class="col-12 pl-0 text-left">Nouveau tuteur:</label>
-                        <input type="text" id="guardian" name="guardian" class="col-md-12 form-control">
-                    </div>
-
-                    <div class="form-group row mb-0 mr-4">
-                        <div class="col-md-8 offset-md-4 text-right">
-                            <button class="btn btn-primary" onclick="updateUserGuardian('{{ $user['id'] }}')">
-                                Enregistrer
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
         <div class="border-bottom border-grey"></div>
 
         <div class="row justify-content-center pt-5">
@@ -315,75 +286,6 @@
                             console.log(error);
                             Swal.fire({
                                 icon: response[0],
-                                title: "Erreur veuillez réessayer",
-                                timer: 3000,
-                                timerProgressBar: true
-                            })
-                        }
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'success',
-                        title: "Action annulée",
-                        timer: 3000,
-                        timerProgressBar: true
-                    })
-                }
-            });
-        }
-
-                /* User guardian update */
-        function updateUserGuardian() {
-            console.log($('#new_confirm_password').val());
-            Swal.fire({
-                title: "Modifier le tuteur?",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#30B016",
-                confirmButtonText: "Réinitialiser",
-                cancelButtonColor: "#E13519",
-                cancelButtonText: "Annuler",
-            }).then((result) => {
-                console.log(result.isConfirmed);
-                if (result.isConfirmed) {
-                    let token = $('meta[name="csrf-token"]').attr('content');
-                    const guardian_update_route = $("#guardian_update_route").attr('value');
-
-                    $.ajax({
-                        url: guardian_update_route,
-                        type: "PUT",
-                        data: {
-                            guardian: $('#guardian').val(),
-                            _token: token,
-                        },
-                        dataType: 'json',
-                        beforeSend: function() {
-                            Swal.fire({
-                                html: '<b>MISE A JOUR DU TUTEUR EN COURS...</b>',
-                                timer: 10000,
-                                didOpen: () => {
-                                    Swal.showLoading()
-                                },
-                                willClose: () => {
-                                    clearInterval(10000)
-                                }
-                            })
-                        },
-                        success: function(response) {
-                            console.log(response);
-                            if (response) {
-                                Swal.fire({
-                                    icon: response[0],
-                                    title: '<b>' + response[1] + '</b>',
-                                    timer: 20000,
-                                    timerProgressBar: true
-                                })
-                            }
-                        },
-                        error: function(error) {
-                            console.log(error);
-                            Swal.fire({
-                                icon: "error",
                                 title: "Erreur veuillez réessayer",
                                 timer: 3000,
                                 timerProgressBar: true

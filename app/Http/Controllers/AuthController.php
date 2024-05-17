@@ -41,7 +41,7 @@ class AuthController extends Controller
             }
             $token = $response['data']['token'];
             session()->put('auth_token', $token["token"]);
-            // session()->put('wallet_balance', $response['data']['wallet_balance']);
+            session()->put('wallet_balance', $response['data']['wallet_balance']);
             return redirect()->intended(RouteServiceProvider::HOME);
         } catch (\Exception $e) {
             app()->get(Handler::class)->report($e);

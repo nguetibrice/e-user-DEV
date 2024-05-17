@@ -56,13 +56,6 @@ interface ApiClientContract
 
     /**
      *
-     * @param string $guardian
-     * @param string $token
-     */
-    public function updateGuardian(string $guardian, string $token);
-
-    /**
-     *
      * @param string $token
      */
     public function destroyUser(string $token);
@@ -83,6 +76,13 @@ interface ApiClientContract
      */
     public function getUser(string $cip, string $token): array;
 
+    /**
+     * Get user from cip
+     *
+     * @param string $cip
+     * @return array
+     */
+    public function getUserFromCip($cip): array;
     /**
      *
      * @param array $token
@@ -162,4 +162,31 @@ interface ApiClientContract
      * Delete the specified language.
      */
     public function createCheckout(string $token, array $data);
+
+    /**
+     * Delete the specified language.
+     */
+    public function rechargeWallet(string $token, array $data);
+
+    /**
+     * Delete the specified language.
+     */
+    public function walletTrasfer(string $token, array $data);
+
+    /**
+     * Delete the specified language.
+     */
+    public function paySubscriptionWithWallet(string $token, array $data);
+
+    /**
+     * quickpay
+     */
+    public function quickPay(array $data);
+
+    /**
+     * Delete the specified language.
+     */
+    public function getCurrencies();
+
+
 }

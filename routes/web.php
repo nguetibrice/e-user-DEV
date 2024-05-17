@@ -23,6 +23,8 @@ use App\Http\Controllers\WelcomeController;
 */
 
 Route::get('/', [WelcomeController::class, 'index'])->name('home');
+Route::get('/complete-registration', [UserController::class, 'completeProfile'])->name('complete.profile');
+Route::post('/quick-pay', [WelcomeController::class, 'quickPay'])->name('quickPay');
 
 Route::get('/login', function () {
     return view('auth.login');
@@ -31,7 +33,6 @@ Route::get('/login', function () {
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::get('/register', function () {
-    // dd('dss');
     return view('auth.register');
 })->name('register');
 
@@ -55,7 +56,7 @@ Route::controller(UserController::class)->group(function () {
     Route::post('/Account/actived', 'actveAccount')->name('account.active');
 });
 
-// Route::get('/itoweer', [BouquetController::class, 'index']);
+Route::get('/itoweer', [BouquetController::class, 'index']);
 
 Route::middleware('fredAuthVerify')->group(function () {
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -65,6 +66,7 @@ Route::middleware('fredAuthVerify')->group(function () {
     });
     Route::controller(RechargeController::class)->group(function () {
         Route::get('/recharge', 'index')->name('recharge.view');
+        Route::post('/recharge', 'recharge')->name('recharge.create');
     });
     Route::controller(PackageController::class)->group(function () {
         Route::post('/paiement/confirme', 'paiementCardStripe')->name('payment.stripe');
@@ -73,6 +75,7 @@ Route::middleware('fredAuthVerify')->group(function () {
         Route::get('/user/abonnement', 'listPackageResources')->name('package.lang');
         Route::get('/user/getabonnement/{id}', 'show')->name('package.show');
         Route::post('/package/pay', 'sendInfosPaymentPage')->name('payment.page');
+        Route::post('/package/pay-wallet', 'paySubscriptionWithwallet')->name('payment.wallet');
         Route::post('/package/checkout', 'checkout')->name('payment.checkout');
         Route::get('/package/payment', 'displayPayment')->name('payment.page.display');
     });
@@ -85,7 +88,6 @@ Route::middleware('fredAuthVerify')->group(function () {
         Route::get('/backend/user/{id}', 'getUser')->name('auth.get_user');
         Route::patch('/user/profile', 'updateProfile')->name('user_profile_update');
         Route::patch('/user/password', 'updatePassword')->name('user_pasword_update');
-        Route::put('/user/guardian', 'updateGuardian')->name('user_guardian_update');
         Route::delete('/user', 'deleteUser')->name('user_deletion');
     });
     Route::get('/recource/not-found', function () {
