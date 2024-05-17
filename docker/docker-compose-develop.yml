@@ -1,0 +1,30 @@
+version: "3.6"
+services:
+  e-user.dev:
+    image: "djed/develop.e-user:${TAG}"
+    hostname: "dev.e-user.languelite.com"
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.e-user-dev-http.entrypoints=web"
+      - "traefik.http.routers.e-user-dev-http.rule=Host(`e-user-dev.languelite.com`)"
+      - "traefik.http.routers.e-user-dev-http.middlewares=e-user-dev"
+      - "traefik.http.middlewares.e-user-dev.redirectscheme.scheme=https"
+      - "traefik.http.routers.e-user-dev.tls=true"
+      - "traefik.http.routers.e-user-dev.tls.certresolver=languelite-resolver"
+      - "traefik.http.routers.e-user-dev.rule=Host(`e-user-dev.languelite.com`)"
+      - "traefik.http.routers.e-user-dev.entrypoints=websecure"
+      - "traefik.http.routers.e-user-dev.middlewares=stripprefix"
+      #- "traefik.http.services.e-user-dev.loadbalancer.server.port=80"
+      - "traefik.http.middlewares.stripprefix.stripprefix.prefixes=/"
+
+    volumes:
+      - "${LOG_PATH}:/www/html/e-user/storage/logs"
+      - /www/html/e-user/develop/nginx/default:/etc/nginx/sites-available/default
+    expose:
+      - "80"
+
+networks:
+  default:
+    external: true
+    name: languelite

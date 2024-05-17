@@ -1,0 +1,28 @@
+version: "3.6"
+services:
+  e-user:
+    image: "${IMAGE_TAG}"
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.e-user-${ENVIRONMENT}-http.entrypoints=web"
+      - "traefik.http.routers.e-user-${ENVIRONMENT}-http.rule=Host(`${HOST}`)"
+      - "traefik.http.routers.e-user-${ENVIRONMENT}-http.middlewares=e-user-${ENVIRONMENT}"
+      - "traefik.http.middlewares.e-user-${ENVIRONMENT}.redirectscheme.scheme=https"
+      - "traefik.http.routers.e-user-${ENVIRONMENT}.tls=true"
+      - "traefik.http.routers.e-user-${ENVIRONMENT}.tls.certresolver=languelite-resolver"
+      - "traefik.http.routers.e-user-${ENVIRONMENT}.rule=Host(`${HOST}`)"
+      - "traefik.http.routers.e-user-${ENVIRONMENT}.entrypoints=websecure"
+      - "traefik.http.routers.e-user-${ENVIRONMENT}.middlewares=stripprefix"
+      - "traefik.http.middlewares.stripprefix.stripprefix.prefixes=/"
+    volumes:
+      - "${LOG_PATH}:/var/www/html/storage/logs:rw"
+      - "${APP_ENV_FILE}:/var/www/html/.env"
+    expose:
+      - "80"
+      - "443"
+
+networks:
+  default:
+    external: true
+    name: "${NETWORK}"
