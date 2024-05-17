@@ -56,7 +56,9 @@
 
   {{-- <link href="{{asset('css/frontend/font-awesome.css')}}" rel="stylesheet"> --}}
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  {{-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" /> --}}
   <link href="{{asset('css/frontend/nucleo-svg.css')}}" rel="stylesheet">
+  <link href="{{asset('css/frontend/form-wizard.css')}}" rel="stylesheet">
 
   <link href="{{asset('css/frontend/argon-design-system.min.css')}}" rel="stylesheet">
   <style>
@@ -64,6 +66,14 @@
     text-overflow: ellipsis;
     overflow: hidden;
     height: 5em;
+    }
+    .fab-container {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     }
   </style>
   @yield('style')
@@ -201,6 +211,7 @@
   <script src="{{asset('js/frontend/jquery.min.js.download')}}" type="text/javascript"></script>
   <script src="{{asset('js/frontend/popper.min.js.download')}}" type="text/javascript"></script>
   <script src="{{asset('js/frontend/bootstrap.min.js.download')}}" type="text/javascript"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" type="text/javascript"></script>
   <script src="{{asset('js/frontend/perfect-scrollbar.jquery.min.js.download')}}"></script>
 
   <script src="{{asset('js/frontend/bootstrap-switch.js.download')}}"></script>
@@ -225,6 +236,7 @@
   <script async="" defer="" src="{{asset('js/frontend/buttons.js.download')}}"></script>
   <script src="{{asset('js/frontend/argon-design-system.min.js.download')}}" type="text/javascript"></script>
   <script src="{{asset('js/frontend/jquery.sharrre.js.download')}}"></script>
+  <script src="{{asset('js/frontend/form-wizard.js')}}"></script>
   @yield('js')
   <script>
     function pageFocus(id) {

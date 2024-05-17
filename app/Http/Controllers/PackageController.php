@@ -184,6 +184,37 @@ class PackageController extends Controller
     }
 
     /**
+     * Pay with wallet.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function paySubscriptionWithwallet(Request $request): JsonResponse
+    {
+        $infos = session()->get("package");
+        $token = session('auth_token');
+
+        $data = [
+            "product_name" => $infos["price_id"],
+            "price_id" => $infos["price_id"],
+            "quantity" => $infos["place"]
+        ];
+        try {
+            $res = $this->eUserApiClient->paySubscriptionWithWallet($token["value"], $data);
+            return response()->json([
+                "status" => "success",
+                "sbscription" => $res
+            ]);
+        } catch (\Exception $e) {
+            app()->get(Handler::class)->report($e);
+            return response()->json([
+                'status' => 'error',
+                'error' => Lang::get('Erreur de paiement, recommencer plus tard')
+            ], 400);
+        }
+    }
+
+    /**
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -261,6 +292,35 @@ class PackageController extends Controller
                 Log::error("SOMETHING_WENT_WRONG_ORANGE_MONEY:", $response);
                 return back()->with('error', Lang::get('Erreur de paiement, recommencer plus tard'));
             }
+        } catch (\Throwable $th) {
+            app()->get(Handler::class)->report($th);
+            return back()->with('error', Lang::get('Erreur de paiement, recommencer plus tard'));
+        }
+    }
+
+    public function paymentWallet(Request $request): RedirectResponse
+    {
+
+        try {
+            $infos = session()->get('package');
+            if ($infos == null) {
+                return response()->json(['error' => Lang::get('Information inconnu')]);
+            }
+            $payment_method = [
+                "type" => "wallet",
+            ];
+
+            $token = session('auth_token');
+
+            $data = [
+                "product_name" => $infos["langue"],
+                "price_id" => $infos["price_id"],
+                "quantity" => $infos["place"],
+                "payment_method" => $payment_method,
+            ];
+
+            $response = $this->eUserApiClient->makeSubscriptionPayment($token, $data);
+            return response()->json($response);
         } catch (\Throwable $th) {
             app()->get(Handler::class)->report($th);
             return back()->with('error', Lang::get('Erreur de paiement, recommencer plus tard'));

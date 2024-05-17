@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\Handler;
 use App\Services\ApiClient;
 use App\Services\Contracts\ApiClientContract;
 use Http;
@@ -22,6 +23,8 @@ class WelcomeController extends Controller
     public function index()
     {
         $languages = $this->eUserApiClient->getLanguages("");
+        $packages = $this->eUserApiClient->getAllPackages()['packages'];
+        $payment_methods = $this->eUserApiClient->getPaymentMethods();
         // $prices = Http::get(env("E_USER_API")."/api/v1/prices");
         $colors = ['primary', 'danger', 'warning', 'info', 'success'];
 
@@ -29,7 +32,9 @@ class WelcomeController extends Controller
             "frontend.index",
             [
                 "languages"=> $languages,
-                'colors' => $colors
+                'colors' => $colors,
+                'payment_methods' => $payment_methods,
+                'packages' => $packages
             ]
         );
     }
@@ -52,5 +57,54 @@ class WelcomeController extends Controller
         }
 
         return view("dashboard")->with('success', 'Paiement Effectué avec success!');
+    }
+
+    public function quickPay(Request $request)
+    {
+        $request->validate([
+            "firstname" => 'required',
+            "lastname" => 'sometimes',
+            "email" => 'required',
+            "phone" => 'sometimes',
+            'product_name' => 'required|string',
+            'price_id' => 'required|string',
+            'quantity' => 'required|numeric|min:1',
+            'payment_method' => 'required',
+            // 'redirect_url' => 'required',
+            'birthday' => 'required|date',
+        ]);
+        try {
+            $data = $request->all();
+            unset($data["_token"]);
+            $data["quantity"] = (int) $data["quantity"];
+            if($data["payment_method"] == "MASTER" || $data["payment_method"] == "VISA") {
+                $data["payment_method"] = "card";
+            }
+
+            $response = $this->eUserApiClient->quickPay($data);
+            switch ($data["payment_method"]) {
+                case 'card':
+                    $url = $response["url"];
+                    break;
+                case 'OM':
+                    $url = $response["payment_url"];
+                    break;
+
+                default:
+                    # code...
+                    break;
+            }
+
+            return response()->json([
+                "status" => "success",
+                "url" => $url
+            ]);
+        } catch (\Exception $th) {
+            app()->get(Handler::class)->report($th);
+            return response()->json([
+                "status" => "fail",
+                "message" => "Erreur Technique, veuillez reessayer plus tard"
+            ], 400);
+        }
     }
 }

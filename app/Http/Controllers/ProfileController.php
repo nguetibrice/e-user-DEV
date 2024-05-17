@@ -106,24 +106,6 @@ class ProfileController extends Controller
         }
     }
 
-    public function updateGuardian(Request $request)
-    {
-        $data = $request->validate([
-            'guardian' => 'required|min:4',
-        ]);
-        $token = session('auth_token');
-        try {
-            $this->eUserApiClient->updateGuardian($data['guardian'], $token['value']);
-            session()->flash('message', Lang::get('Mise à jour du tuteur réussi'));
-            return response()->json(['success', Lang::get('Mise à jour du tuteur réussi')]);
-        } catch (\Exception $e) {
-            app()->get(Handler::class)->report($e);
-            session()->flash('error', Lang::get("Erreur, recommencer plus tard"));
-            return response()->json(['error', Lang::get("Erreur, recommencer plus tard")]);
-        }
-    }
-
-
     /**
      * Delete the authenticated user.
      */

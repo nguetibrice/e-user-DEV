@@ -7,6 +7,7 @@ use App\Services\ApiClient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Lang;
 use App\Services\Contracts\ApiClientContract;
+use DateTime;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Fluent;
 use Illuminate\Validation\Rule;
@@ -31,7 +32,6 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        // dd('sds');
         $user = $request->validate([
             'birthday' => 'sometimes|date',
             'first_name' => 'required|string|min:4|max:24',
@@ -39,6 +39,7 @@ class UserController extends Controller
             'phone' => 'sometimes|string',
             'alias' => 'required|string|min:4|max:24',
             'email' => 'required|email',
+            'cip' => 'sometimes',
             'password' => [
                 'required',
                 'string',
@@ -46,6 +47,7 @@ class UserController extends Controller
                 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@%-+_!.,@#$^&?%éè]).+$/'
             ],
             'guardian' => [
+                'string',
                 Rule::requiredIf($this->checkAge($request->birthday))
             ],
         ]);
@@ -95,5 +97,29 @@ class UserController extends Controller
             return $diff->y >= 18;
         }
         return false;
+    }
+
+    public function completeProfile(Request $request)
+    {
+        $request->validate([
+            "cip" => "required"
+        ]);
+        try {
+            $user = $this->eUserApiClient->getUserFromCip($request->cip)["user"];
+            if ($user["status"] != 0) {
+                return redirect()->route("login")->with('error', Lang::get("Veillez vous connecter a votre compte pour terminer votre action"));
+            }
+            $dateTime = new DateTime($user["birthday"]);
+
+            // Format the date using the desired format string
+            $formattedDate = $dateTime->format('Y-m-d');
+
+            $user["birthday"] = $formattedDate; // Output: 2024-04-24
+            return view('auth.complete-profile', compact("user"));
+        } catch (\Exception $e) {
+            app()->get(Handler::class)->report($e);
+            return redirect()->route("home")->with('error', Lang::get("Utilisateur Introuvable, veillez reessayer plus tard"));
+        }
+
     }
 }

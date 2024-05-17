@@ -400,7 +400,7 @@
                 <!-- partial:partials/_footer.html -->
                 <footer class="footer">
                     <div class="d-sm-flex justify-content-center justify-content-sm-between">
-                        <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2022.
+                        <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © {{ date("Y") }}.
                     </div>
                 </footer>
                 <!-- partial -->
@@ -415,7 +415,6 @@
 
 
     <!-- plugins:js -->
-    
     <script src="{{ asset('vendors/js/vendor.bundle.base.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- endinject -->

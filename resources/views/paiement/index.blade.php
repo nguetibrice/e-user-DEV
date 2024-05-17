@@ -16,11 +16,11 @@
                 <div class="d-flex justify-content-around bg-blu-200 h-12">
                     <button id="master"
                         class="divide-y-4 h-full   border-2  rounded-lg divide-slate-400/25 block bg-white shadow-md hover:shadow-xl">
-                        <img src="{{ asset('/image/master.png') }}" alt="" class="rounded-lg w-full h-full">
+                        <img src="{{ asset('/image/master.png') }}" alt="" class="rounded-lg w-15 h-full">
                     </button>
                     <button id="visa"
                         class="divide-y-4 h-full  border-2 rounded-lg  divide-slate-400/25 block bg-white shadow-md hover:shadow-xl ml-4">
-                        <img src="{{ asset('/image/visa.png') }}" alt="" class="rounded-lg w-23 h-10">
+                        <img src="{{ asset('/image/visa.png') }}" alt="" class="rounded-lg w-15 h-10">
                     </button>
                     @foreach ($payment_methods as $method)
                         @if($method["status"] == 1)
@@ -51,7 +51,11 @@
                     @endforeach
                     <button id="generate-link" data-te-toggle="tooltip" data-te-placement="top" title="Genere Lien de paiement pour payer par vous meme ou partager a vos proches"
                         class="btn btn-outline-dark shadow-md hover:shadow-xl">
-                        <i class="fa fa-link"></i>
+                        <img src="{{ asset('/image/payment-link.png') }}" alt="" class="rounded-lg w-15 h-10">
+                    </button>
+                    <button id="wallet"
+                        class="divide-y-4 h-full  border-2 rounded-lg  divide-slate-400/25 block bg-white shadow-md hover:shadow-xl ml-4">
+                        <img src="{{ asset('/image/wallet.png') }}" alt="" class="rounded-lg w-23 h-10">
                     </button>
                 </div>
                 <br>
@@ -133,10 +137,11 @@
                                 </label>
                                 <select name="pays" id="maspays"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                    <option selected>Pays</option>
                                     <option value="CM">Cameroun</option>
                                     <option value="US">USA</option>
                                     <option value="GB">England</option>
+                                    <option value="CA">Canada</option>
+                                    <option value="FR">France</option>
                                 </select>
                             </div>
                             <div class="flex items-center justify-between">
@@ -566,6 +571,16 @@
                 checkout()
             });
 
+            $('#wallet').click(function() {
+                $('#fmaster').hide(1000);
+                $('#fpaypal').hide(1000);
+                $('#fom').hide(1000);
+                $('#fmomo').hide(1000);
+                $('#fvisa').hide(1000);
+                payWithWallet()
+            });
+
+
         });
 
         function payMaster(event) {
@@ -776,6 +791,97 @@
                 }
             });
         };
+        function payWithWallet() {
+            Swal.fire({
+                title: "Voulez vous Utiliser votre solde wallet pour payer l'abonnement ?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "OUI Payer",
+                cancelButtonText: "Cancel",
+            }).then((result) => {
+                console.log(result.isConfirmed);
+                if (result.isConfirmed) {
+
+                    let token = $('meta[name="csrf-token"]').attr('content');
+                    const urled = "{{ route('payment.wallet', [] , false) }}";
+
+                    $.ajax({
+                        url: urled,
+                        type: "POST",
+                        data: {
+                            _token: token,
+                        },
+                        dataType: 'json',
+                        beforeSend: function() {
+                            Swal.fire({
+                                html: '<b>PATIENTEZ SVP,NOUS GENERONS LE LIEN DE PAIEMENT ...</b>',
+                                timer: 10000,
+                                didOpen: () => {
+                                    Swal.showLoading()
+                                },
+                                willClose: () => {
+                                    clearInterval(timerInterval)
+                                }
+                            })
+                        },
+                        success: function(response) {
+                            console.log(response);
+                            if (response["status"] == "success") {
+                                checkoutLink = response["url"];
+                                Swal.fire({
+                                    icon: response["status"],
+                                    title: "Paiement effectue avec success",
+                                    // html: ``,
+                                    // confirmButtonText: '',
+                                    timer: 20000,
+                                    timerProgressBar: false,
+                                    willClose: () => {
+                                        window.location.href = "{{ route('dashboard') }}";
+                                    }
+                                })
+                                //location.reload(true);
+                            }
+                            if (response["status"] === 'error') {
+                                if (response["reason"] === 'Technical error. Try later') {
+                                    Swal.fire({
+                                        icon: response["status"],
+                                        title: response["exception"]["message"],
+                                        timer: 20000,
+                                        timerProgressBar: false
+                                    })
+                                } else {
+                                    Swal.fire({
+                                        icon: response["status"],
+                                        title: response["reason"],
+                                        timer: 20000,
+                                        timerProgressBar: false
+                                    })
+                                }
+
+                            }
+                        },
+                        error: function(error) {
+                            console.log(error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: "veillez à bien remplir les champs svp",
+                                timer: 3000,
+                                timerProgressBar: false
+                            })
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'success',
+                        title: "Action annulée",
+                        timer: 3000,
+                        timerProgressBar: true
+                    })
+                }
+            });
+        };
+
         function copyCheckoutLink() {
             console.log(checkoutLink);
             navigator.clipboard.writeText(checkoutLink);
